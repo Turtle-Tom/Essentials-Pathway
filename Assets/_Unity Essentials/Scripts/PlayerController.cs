@@ -12,12 +12,21 @@ public class PlayerController : MonoBehaviour
     [Tooltip("Turn speed (degrees/sec).")]
     public float rotationSpeed = 180.0f;
 
+    [Tooltip("Magnitude of upward force (units/sec).")]
+    public float jumpForce = 5.0f;
+
     private Rigidbody rb;
 
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
         if (rb == null) Debug.LogWarning("PlayerController needs a Rigidbody.");
+    }
+
+    private void Update() {
+        if (Keyboard.current.spaceKey.wasPressedThisFrame) {
+            rb.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
+        }
     }
 
     private void FixedUpdate()
@@ -33,7 +42,7 @@ public class PlayerController : MonoBehaviour
         if (Keyboard.current.dKey.isPressed || Keyboard.current.rightArrowKey.isPressed) moveInput.x = 1f;
 
         // Move in facing direction 
-        Vector3 movement = transform.forward * moveInput.y * speed * Time.fixedDeltaTime;
+        Vector3 movement = moveInput.y * speed * Time.fixedDeltaTime * transform.forward;
         rb.MovePosition(rb.position + movement);
 
         // Y-axis rotation (invert when going backwards)
